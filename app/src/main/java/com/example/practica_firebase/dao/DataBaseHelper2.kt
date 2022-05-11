@@ -63,10 +63,10 @@ class DataBaseHelper2(context: Context?) :
 
         if (cursor.moveToFirst()){
             do {
-                val areaId = cursor.getInt(0)
+                val areaId = cursor.getLong(0)
                 val description = cursor.getString(1)
                 val division = cursor.getString(2)
-                val cantidadEmpleados = cursor.getInt(3)
+                val cantidadEmpleados = cursor.getLong(3)
 
                 val nuevaArea = AreaModel(areaId, description, division, cantidadEmpleados)
                 returnList.add(nuevaArea)
@@ -94,10 +94,10 @@ class DataBaseHelper2(context: Context?) :
 
         if (cursor.moveToFirst()){
             do {
-                val areaId = cursor.getInt(0)
+                val areaId = cursor.getLong(0)
                 val description = cursor.getString(1)
                 val division = cursor.getString(2)
-                val cantidadEmpleados = cursor.getInt(3)
+                val cantidadEmpleados = cursor.getLong(3)
 
                 nuevaArea = AreaModel(areaId, description, division, cantidadEmpleados)
                 returnList.add(nuevaArea)
@@ -123,10 +123,10 @@ class DataBaseHelper2(context: Context?) :
 
         if (cursor.moveToFirst()){
             do {
-                val areaId = cursor.getInt(0)
+                val areaId = cursor.getLong(0)
                 val description = cursor.getString(1)
                 val division = cursor.getString(2)
-                val cantidadEmpleados = cursor.getInt(3)
+                val cantidadEmpleados = cursor.getLong(3)
 
                 val nuevaArea = AreaModel(areaId, description, division, cantidadEmpleados)
                 returnList.add(nuevaArea)
@@ -180,10 +180,10 @@ class DataBaseHelper2(context: Context?) :
 
         if (cursor.moveToFirst()){
             do {
-                val subDeptoId = cursor.getInt(0)
+                val subDeptoId = cursor.getLong(0)
                 val idEdificio = cursor.getString(1)
                 val piso = cursor.getString(2)
-                val idArea = cursor.getInt(3)
+                val idArea = cursor.getLong(3)
 
                 nuevoSubDepto = SubDeptoModel(subDeptoId, idEdificio, piso)
                 returnList.add(nuevoSubDepto)
@@ -209,10 +209,10 @@ class DataBaseHelper2(context: Context?) :
         var nuevoSubDepto: SubDeptoModel? = null
 
         if (cursor.moveToFirst()){
-            val subDeptoId = cursor.getInt(0)
+            val subDeptoId = cursor.getLong(0)
             val idEdificio = cursor.getString(1)
             val piso = cursor.getString(2)
-            val idArea = cursor.getInt(3)
+            val idArea = cursor.getLong(3)
 
             nuevoSubDepto = SubDeptoModel(subDeptoId, idEdificio, piso)
         }

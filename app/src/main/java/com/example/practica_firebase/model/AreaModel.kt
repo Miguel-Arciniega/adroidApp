@@ -1,7 +1,10 @@
 package com.example.practica_firebase.model
 
 class AreaModel
-    (var idArea: Int = -1, var descripcion: String? = null, var division: String? = null, var cantEmpleados: Int? = null, var subDepartamento: SubDeptoModel? = null) {
+    (var idArea: Long = -1,
+     var descripcion: String = "error",
+     var division: String = "error",
+     var cantEmpleados: Long = -1) {
 
     // toString
     override fun toString(): String {

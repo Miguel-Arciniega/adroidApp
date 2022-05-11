@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.practica_firebase.dao.DataBaseHelper
@@ -19,6 +20,7 @@ import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DIVISION
 import com.example.practica_firebase.util.FormUtils
 import com.example.practica_firebase.util.MessagesUtils
+import kotlinx.coroutines.*
 
 class DashboardFragment : Fragment() {
 
@@ -35,7 +37,7 @@ class DashboardFragment : Fragment() {
 
         // Inicializar Base de Datos
         val dataBaseHelper1  = DataBaseHelper2(requireContext())
-        val dataBaseHelper = DataBaseHelper(requireContext())
+        val dataBaseHelper = DataBaseHelper()
 
         // Declaración de componentes
         val lvAreaView = binding.lvLista
@@ -58,6 +60,7 @@ class DashboardFragment : Fragment() {
          *   al hacer click al boton mostar
          */
         btnMostrar.setOnClickListener {
+            // Actualizar listView
             FormUtils.updateListView(lvAreaView, dataBaseHelper.getAllAreas(), requireContext())
         }
 
@@ -69,7 +72,7 @@ class DashboardFragment : Fragment() {
             try {
                 FormUtils.validateTextFields(listOf(etDescripcion, etDivision, etCantEmpleados))
 
-                val etCantEmpleadosVal = binding.etCantidadEmpleados.text.toString().toInt()
+                val etCantEmpleadosVal = binding.etCantidadEmpleados.text.toString().toLong()
                 val etDescripcionVal = binding.etDescripcion.text.toString()
                 val etDivisionVal = binding.etDivision.text.toString()
 
@@ -116,7 +119,7 @@ class DashboardFragment : Fragment() {
                 }
 
                 // Actualizar listView
-                FormUtils.updateListView(lvAreaView, areas, requireContext())
+                // FormUtils.updateListView(lvAreaView, areas, requireContext())
 
                 if (areas.isNullOrEmpty()) {
                     Toast.makeText(requireContext(), NO_RESULTS_FOUND, Toast.LENGTH_SHORT).show()
