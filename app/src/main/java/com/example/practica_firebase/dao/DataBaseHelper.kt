@@ -5,18 +5,18 @@ import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_CANT_E
 import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_DESCRIPTION
 import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_DIVISION
 import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_AREA
+import com.example.practica_firebase.util.ConstantsUtils.Companion.FAILURE_TO_GET_AREAS
 import com.example.practica_firebase.model.AreaModel
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 
 class DataBaseHelper {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // ---- Añadir nueva
+    /**
+     *  Añadir nueva area
+     */
     fun addOneArea(areaModel : AreaModel) {
         db.collection(COLLECTION).document().set(
             hashMapOf(
@@ -28,36 +28,36 @@ class DataBaseHelper {
         )
     }
 
-    // ---- Obtener todas areas
-    fun getAllAreas() : ArrayList<AreaModel> = runBlocking {
-        val returnList =   ArrayList<AreaModel>()
+    /**
+     *  Obtener todas areas
+     *  TODO: Arreglar, regresa la lista vacía antes de recuperar los datos de firestore
+     */
+    fun getAllAreas() : List<AreaModel>  {
+        val returnList = ArrayList<AreaModel>()
 
-        try {
-            withContext(Dispatchers.Default) {
-                db.collection(COLLECTION).addSnapshotListener { documentos, error ->
-                    if (error != null) {
-                        throw RuntimeException()
-                    }
-                    for (documento in documentos!!) {
-                        documento.getLong(FIELD_ID_AREA)
-                        documento.getString(FIELD_DESCRIPTION)
-                        documento.getString(FIELD_DIVISION)
-                        val newArea = documento.toObject(AreaModel::class.java)
-                        returnList.add(newArea)
-
-                        println(newArea)
-                    }
-                }
+        db.collection(COLLECTION).addSnapshotListener { documentos, error ->
+            if (error != null) {
+                // TODO: Mandar el mensaje en un Toast?
+                println(FAILURE_TO_GET_AREAS)
             }
-        } catch (e: RuntimeException) {
-            println(e)
+            for (documento in documentos!!) {
+                documento.getLong(FIELD_ID_AREA)
+                documento.getString(FIELD_DESCRIPTION)
+                documento.getString(FIELD_DIVISION)
+                val newArea = documento.toObject(AreaModel::class.java)
+                returnList.add(newArea)
+                println(newArea)
+            }
         }
 
-        return@runBlocking returnList
+        return returnList
     }
 
-    // buscar por document(id)
-    // ---- Obtener areas por id
+
+    /**
+     *  Obtener areas por id
+     *  TODO: WIP
+     */
     fun getAreasByAreaId(areaId : Int) : List<AreaModel> {
         var areas : List<AreaModel> = listOf()
         db.collection(COLLECTION).whereEqualTo("areaId", areaId).get()

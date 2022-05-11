@@ -5,15 +5,12 @@ import android.content.Context
 import android.text.Editable
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.Toast
-import com.example.practica_firebase.dao.DataBaseHelper
 import com.example.practica_firebase.exception.ValidationException
 import com.example.practica_firebase.model.AreaModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.lang.RuntimeException
 
 class FormUtils {
     companion object{
@@ -30,40 +27,40 @@ class FormUtils {
             areas : List<AreaModel>,
             context: Context
         ) {
-            val areaArrayAdapter: ArrayAdapter<AreaModel> =
-                ArrayAdapter(context, R.layout.simple_list_item_1, areas)
-            lvAreaView.adapter = areaArrayAdapter
+            GlobalScope.launch(Dispatchers.IO) {
+                val listAreas = async { areas }
+                lvAreaView.adapter = ArrayAdapter(context, R.layout.simple_list_item_1, listAreas.await())
+            }
         }
 
         /*
-         *   Valida que los edit text no esten vacios
+         *   Valida que el edit text no este vacios
          *
          *   @param fields
          *   @throws ValidationException
          */
-         fun validateTextFields(fields: List<Editable>){
-            if (fields.isNullOrEmpty()){
+        fun validateTextField(field: Editable?){
+            if (field.isNullOrEmpty()){
                 return
             }
 
-            for (field in fields){
-                if (field.isBlank()) {
-                    throw ValidationException();
-                }
+            if (field.isNullOrBlank()) {
+                throw ValidationException();
             }
         }
 
+
         /*
-         *   Limpia los edit text
+         *   Limpia un edit text
          *
-         *   @param fields
+         *   @param field
          */
-         fun clearFields(fields: List<Editable>){
-            if (fields.isNullOrEmpty()){
+        fun clearField(field: Editable?){
+            if (field.isNullOrEmpty()){
                 return
             }
 
-            fields.forEach{field -> field.clear()}
+            field.clear()
         }
     }
 }

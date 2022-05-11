@@ -1,26 +1,20 @@
 package com.example.practica_firebase.ui.dashboard
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.practica_firebase.dao.DataBaseHelper
-import com.example.practica_firebase.dao.DataBaseHelper2
 import com.example.practica_firebase.databinding.FragmentDashboardBinding
 import com.example.practica_firebase.exception.ValidationException
-import com.example.practica_firebase.model.AreaModel
 import com.example.practica_firebase.util.ConstantsUtils.Companion.AREA_SUCCESSFULLY_ADDED
 import com.example.practica_firebase.util.ConstantsUtils.Companion.INSERT_VALIDATION_MESSAGE
-import com.example.practica_firebase.util.ConstantsUtils.Companion.NO_RESULTS_FOUND
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SEARCH_VALIDATION_MESSAGE
-import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DESCRIPCION
-import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DIVISION
 import com.example.practica_firebase.util.FormUtils
 import com.example.practica_firebase.util.MessagesUtils
-import kotlinx.coroutines.*
 
 class DashboardFragment : Fragment() {
 
@@ -36,8 +30,11 @@ class DashboardFragment : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
         // Inicializar Base de Datos
-        val dataBaseHelper1  = DataBaseHelper2(requireContext())
         val dataBaseHelper = DataBaseHelper()
+
+        // Inicializar Servicio
+        val dashboardFragmentService =
+            DashboardFragmentService(dataBaseHelper, requireContext())
 
         // Declaración de componentes
         val lvAreaView = binding.lvLista
@@ -49,87 +46,60 @@ class DashboardFragment : Fragment() {
         val etDivision = binding.etDivision.text
         val etBuscar = binding.etBuscar.text
 
+        // TODO: Arreglar, no actualiza al iniciar
         // Actualiza el list view de areas al iniciar
         FormUtils.updateListView(lvAreaView, dataBaseHelper.getAllAreas(), requireContext())
 
         // Muestra mensaje de información
-        MessagesUtils.showMessage(requireContext(), buildMessage())
+        MessagesUtils.showMessage(requireContext(), dashboardFragmentService.buildMessage())
 
-        /*
-         *   Actualiza el list view de areas
-         *   al hacer click al boton mostar
+        /**
+         *  Actualiza el list view de areas al hacer click al boton mostar
+         *  TODO: Arreglar, funciona pero no como debería
          */
         btnMostrar.setOnClickListener {
-            // Actualizar listView
             FormUtils.updateListView(lvAreaView, dataBaseHelper.getAllAreas(), requireContext())
         }
 
-        /*
-         *  Inserta una nueva area en la base de datos
-         *  al hacer click al boton insertar
+        /**
+         *  Inserta una nueva area en la base de datos al hacer
+         *  click al boton insertar
          */
         btnInsertar.setOnClickListener{
             try {
-                FormUtils.validateTextFields(listOf(etDescripcion, etDivision, etCantEmpleados))
+                val fieldMap = hashMapOf<String, Editable>()
 
-                val etCantEmpleadosVal = binding.etCantidadEmpleados.text.toString().toLong()
-                val etDescripcionVal = binding.etDescripcion.text.toString()
-                val etDivisionVal = binding.etDivision.text.toString()
+                fieldMap["etCantEmpleados"] = etCantEmpleados
+                fieldMap["etDescripcion"] = etDescripcion
+                fieldMap["etDivision"] = etDivision
 
-                // Crea y agrega una nueva area a la base de datos
-                val newArea = AreaModel(-1, etDescripcionVal, etDivisionVal, etCantEmpleadosVal)
-                dataBaseHelper.addOneArea(newArea)
+                // Agregar documento a la bd
+                dashboardFragmentService.addDocumentWithFormValues(fieldMap)
 
                 // Actualizar listView
                 FormUtils.updateListView(lvAreaView, dataBaseHelper.getAllAreas(), requireContext())
-
-                // Limpiar campos
-                FormUtils.clearFields(listOf(etDescripcion, etDivision, etCantEmpleados))
-
                 Toast.makeText(requireContext(), AREA_SUCCESSFULLY_ADDED, Toast.LENGTH_SHORT).show()
-
             } catch (exception : ValidationException){
                 Toast.makeText(requireContext(), INSERT_VALIDATION_MESSAGE, Toast.LENGTH_SHORT).show()
             }
         }
 
-        /*
-         *   Regresa todas las areas que concidan con el valor buscado
-         *   dependiendo del filtro seleccionado en el spinner
-         *   al hacer click al boton buscar
+        /**
+         *  Regresa todas las areas que concidan con el valor buscado
+         *  dependiendo del filtro seleccionado
          */
         btnBuscar.setOnClickListener{
-            val spinner = binding.spinner.selectedItem
+            val spinner = binding.spinner
 
             try {
-
-                // Valida que los campos no esten vacios
-                FormUtils.validateTextFields(listOf(etBuscar))
-
-                val etBuscarValue = binding.etBuscar.text.toString()
-                var areas : List<AreaModel> = listOf()
-
-                /* Invoca al dataBaseHelper para buscar areas dependiendo del
-                    criterio de busqueda */
-                if (spinner.equals(SPINNER_VALUE_DESCRIPCION)) {
-                    areas = dataBaseHelper1.getAreasByDescripcion(etBuscarValue)
-                }
-                if (spinner.equals(SPINNER_VALUE_DIVISION)){
-                    areas = dataBaseHelper1.getAreasByDivision(etBuscarValue)
-                }
+                // Recuperar las areas resultantes según el criterio
+                val area = dashboardFragmentService.searchDocumentWithFormValues(etBuscar, spinner)
 
                 // Actualizar listView
-                // FormUtils.updateListView(lvAreaView, areas, requireContext())
-
-                if (areas.isNullOrEmpty()) {
-                    Toast.makeText(requireContext(), NO_RESULTS_FOUND, Toast.LENGTH_SHORT).show()
-                }
-
-                // Limpiar campos
-                FormUtils.clearFields(listOf(etBuscar))
+                FormUtils.updateListView(lvAreaView, area, requireContext())
 
             } catch (exception : ValidationException){
-                Toast.makeText(requireContext(), SEARCH_VALIDATION_MESSAGE, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, SEARCH_VALIDATION_MESSAGE, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -139,20 +109,5 @@ class DashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun buildMessage(): String {
-        val stringBuilder = StringBuilder()
-
-        stringBuilder
-            .appendLine("PARA BUSCAR UN AREA:\n")
-            .appendLine("SE SELECCIONA SI ES POR <DESCRIPCIÓN O POR DIVISIÓN>, Y DESPUES SE ANOTA")
-            .append(" EL NOMBRE EN EL CAMPO DE TEXTO, DAR CLICK EN ")
-            .appendLine("PARA MOSTRAR DATOS:\n")
-            .appendLine("DAR CLICK A <MOSTRAR TODAS LAS AREAS> PARA VISUALIZARLAS.\n")
-            .appendLine("PARA ELIMINAR Y ACTUALIZAR:\n")
-            .appendLine("SE PRESIONA EL AREA(EN EL LISTVIEW) Y TE DARÁ LAS OPCIONES AUTOMATICAMENTE")
-
-        return stringBuilder.toString()
     }
 }
