@@ -3,10 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.212" />
         <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/activity_modal_actualizar.xml" value="0.25181159420289856" />
+        <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/fragment_area.xml" value="0.34782608695652173" />
         <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/fragment_dashboard.xml" value="0.3625" />
         <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/fragment_home.xml" value="0.3625" />
         <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/fragment_notifications.xml" value="0.3625" />
+        <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/fragment_sub_deptos.xml" value="0.3277310924369748" />
+        <entry key="..\:/Users/arcin/AndroidStudioProjects/PRACTICA_FIREBASE/app/src/main/res/layout/modal_mostrar_areas.xml" value="0.34782608695652173" />
       </map>
     </option>
   </component>
