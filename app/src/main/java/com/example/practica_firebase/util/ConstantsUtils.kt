@@ -6,7 +6,7 @@ class ConstantsUtils {
         const val BTN_ACCEPT = "ACEPTAR"
         const val SPINNER_VALUE_DIVISION = "DIVISION"
         const val SPINNER_VALUE_DESCRIPCION = "DESCRIPCION"
-        const val SPINNER_VALUE_ID_EDIFICIO = "ID_EDIFICIO"
+        const val SPINNER_VALUE_ID_EDIFICIO = "ID EDIFICIO"
 
         const val TYPE_AREA = "Areas"
         const val TYPE_SUB_DEPTO = "Subdepartamentos"
@@ -42,7 +42,8 @@ class ConstantsUtils {
         const val FAIL_WHEN_TRYING_TO_GET_SUB_DEPTO = "Hubo un problema al obtener los sub departamentos"
         const val AREA_SUCCESSFULLY_ADDED = "Area agregada con éxito"
         const val SUB_DEPTO_SUCCESSFULLY_ADDED = "Sub departamento agregado con éxito"
-        const val NO_RESULTS_FOUND = "No se encontraron areas que coincidan con su criterio de busqueda"
+        const val NO_RESULTS_FOUND_AREAS = "No se encontraron areas que coincidan con su criterio de busqueda"
+        const val NO_RESULTS_FOUND_SUB_DEPTO = "No se encontraron subdepartamentos que coincidan con su criterio de busqueda"
 
     }
 }

@@ -28,7 +28,7 @@ class DataBaseHelper {
     }
 
     /**
-     *  Añadir nueva area
+     *  Actualizar area
      */
     fun updateOneArea(area : AreaModel) {
         db.collection(COLLECTION_AREAS).document(area.idArea.toString()).update(
@@ -104,7 +104,7 @@ class DataBaseHelper {
     }
 
     /**
-     *  Obtener areas por descripcion
+     *  borrar area por idArea
      */
     suspend fun deleteAreaById (areaId : Long) {
 
@@ -157,7 +157,7 @@ class DataBaseHelper {
     }
 
     /**
-     *  Obtener todas areas
+     *  Obtener todas las subdepartamentos
      */
     suspend fun getAllSubDeptos() : List<SubDeptoModel>  {
         val returnList = ArrayList<SubDeptoModel>()
@@ -176,7 +176,7 @@ class DataBaseHelper {
     }
 
     /**
-     *  Obtener areas por descripcion
+     *  Obtener subdepartamentos por descripcion
      */
     suspend fun getSubDeptoByDescription(description : String) : List<SubDeptoModel> {
 
@@ -204,7 +204,7 @@ class DataBaseHelper {
     }
 
     /**
-     *  Obtener areas por descripcion
+     *  Obtener subdepartamentos por descripcion
      */
     suspend fun getSubDeptoByDivision(division : String) : List<SubDeptoModel> {
 
@@ -231,18 +231,74 @@ class DataBaseHelper {
         return returnList
     }
 
+    /**
+     *  Obtener subdepartamentos por descripcion
+     */
+    suspend fun getSubDeptoByIdEdificio(idEdificio : String) : List<SubDeptoModel> {
+
+        val returnList = ArrayList<SubDeptoModel>()
+
+        val query = db.collection(COLLECTION_SUB_DEPTO)
+            .whereEqualTo(FIELD_ID_EDIFICIO, idEdificio).get().await()
+
+        val documents = query.documents
+
+        if (documents.isNotEmpty()) {
+            for (document in documents) {
+                val newSubDepto = document.toObject<SubDeptoModel>()
+                returnList.add(newSubDepto!!)
+            }
+        }
+
+        return returnList
+    }
+
+    /**
+     *  Borrar subDepartamento por idSubDepto
+     */
+    suspend fun deleteSubDeptoById(idSubDepto : Long) {
+
+        val idList = ArrayList<String>()
+        val query = db.collection(COLLECTION_SUB_DEPTO)
+            .whereEqualTo(FIELD_ID_SUBDEPTO, idSubDepto).get().await()
+
+        val documents = query.documents
+
+        if (documents.isNotEmpty()) {
+            for (document in documents) {
+                idList.add(document.id)
+            }
+        }
+
+        for (id in idList){
+            db.collection(COLLECTION_SUB_DEPTO).document(id).delete()
+        }
+    }
+
+    /**
+     *  Actualizar subdepartamento
+     */
+    fun updateOneSubDepartamento(subDeptoModel : SubDeptoModel) {
+        db.collection(COLLECTION_SUB_DEPTO).document(subDeptoModel.idSubDepto.toString()).update(
+            mapOf(
+                FIELD_ID_SUBDEPTO to subDeptoModel.idSubDepto,
+                FIELD_ID_EDIFICIO to subDeptoModel.idEdificio,
+                FIELD_PISO to subDeptoModel.piso,
+                FIELD_ID_AREA to subDeptoModel.idArea
+            )
+        )
+    }
+
     companion object DbConstants {
 
         const val COLLECTION_AREAS = "areas"
         const val COLLECTION_SUB_DEPTO = "sub_depto"
-
 
         const val FIELD_ID_AREA = "idArea"
         const val FIELD_DESCRIPCION = "descripcion"
         const val FIELD_DIVISION = "division"
         const val FIELD_CANT_EMPLEADOS = "cantEmpleados"
 
-        const val FIELD_SUB_DPTO = "subDepto"
         const val FIELD_ID_SUBDEPTO = "idSubDepto"
         const val FIELD_ID_EDIFICIO = "idEdificio"
         const val FIELD_PISO = "piso"

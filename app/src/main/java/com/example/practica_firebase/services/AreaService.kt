@@ -3,12 +3,10 @@ package com.example.practica_firebase.services
 import android.content.Context
 import android.text.Editable
 import android.widget.Spinner
-import android.widget.Toast
 import com.example.practica_firebase.dao.DataBaseHelper
 import com.example.practica_firebase.exception.ValidationException
 import com.example.practica_firebase.model.AreaModel
 import com.example.practica_firebase.model.enum.Operation
-import com.example.practica_firebase.util.ConstantsUtils
 import com.example.practica_firebase.util.ConstantsUtils.Companion.AREA_SUCCESSFULLY_ADDED
 import com.example.practica_firebase.util.ConstantsUtils.Companion.ET_CANT_EMPLEADOS
 import com.example.practica_firebase.util.ConstantsUtils.Companion.ET_DESCRIPCION
@@ -16,7 +14,7 @@ import com.example.practica_firebase.util.ConstantsUtils.Companion.ET_DIVISION
 import com.example.practica_firebase.util.ConstantsUtils.Companion.FAIL_WHEN_TRYING_TO_GET_AREAS
 import com.example.practica_firebase.util.ConstantsUtils.Companion.FAIL_WHEN_TRYING_TO_INSERT_AREA
 import com.example.practica_firebase.util.ConstantsUtils.Companion.INSERT_VALIDATION_MESSAGE
-import com.example.practica_firebase.util.ConstantsUtils.Companion.NO_RESULTS_FOUND
+import com.example.practica_firebase.util.ConstantsUtils.Companion.NO_RESULTS_FOUND_AREAS
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SEARCH_VALIDATION_MESSAGE
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DESCRIPCION
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DIVISION
@@ -107,7 +105,7 @@ class AreaService(context: Context) {
                     areas = dataBaseHelper.getAreasByDivision(etBuscarValue)
                 }
                 if (areas.isNullOrEmpty()) {
-                    makeMessage(NO_RESULTS_FOUND, dashboardContext)
+                    makeMessage(NO_RESULTS_FOUND_AREAS, dashboardContext)
                 }
 
             // Limpia el campo de texto
@@ -121,12 +119,11 @@ class AreaService(context: Context) {
     }
 
     /**
-     *  Valida el contenido de los campos
-     *  Regresa todas las areas que concidan con el valor buscado
-     *  dependiendo del filtro seleccionado en el spinner
+     *  Procesa la respuesta obtenida del AlertDialog y realiza
+     *  la operación en base de datos correspondiente
      *
-     *  @param editText
-     *  @param spinner
+     *  @param area
+     *  @param operation
      */
     suspend fun processAlertResponse(area: AreaModel, operation : Operation) {
 

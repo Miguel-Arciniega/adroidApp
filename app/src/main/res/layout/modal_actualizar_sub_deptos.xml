@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".ui.modal.ModalActualizarArea">
+    tools:context=".ui.modal.ModalActualizarSubDepto">
 
     <Button
         android:id="@+id/volver"
@@ -14,22 +15,24 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
         android:text="VOLVER" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ACTUALIZAR SUBDEPARTAMENTO"
+        android:textAlignment="center"
+        android:textSize="15dp"
+        android:layout_marginBottom="10dp"
+        android:textStyle="bold"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="DESCRIPCION"
-        android:id="@+id/descripcion"/>
+        android:hint="ID EDIFICIO"
+        android:id="@+id/idedificio"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="DIVISION"
-        android:id="@+id/s_division"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="CANTIDAD DE EMPLEADOS"
-        android:id="@+id/cantidad_empleados"/>
+        android:hint="PISO"
+        android:id="@+id/piso"/>
 
     <Button
         android:id="@+id/actualizar"
@@ -42,7 +45,7 @@
         android:layout_width="445dp"
         android:layout_height="172dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="90dp"
-        android:src="@drawable/actualizar" />
+        android:layout_marginTop="50dp"
+        android:src="@drawable/subactualizar" />
 
 </LinearLayout>

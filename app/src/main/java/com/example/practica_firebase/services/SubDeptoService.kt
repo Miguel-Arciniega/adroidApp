@@ -6,8 +6,8 @@ import android.widget.Spinner
 import com.example.practica_firebase.dao.DataBaseHelper
 import com.example.practica_firebase.exception.AreaNotSelectedException
 import com.example.practica_firebase.exception.ValidationException
-import com.example.practica_firebase.model.AreaModel
 import com.example.practica_firebase.model.SubDeptoModel
+import com.example.practica_firebase.model.enum.Operation
 import com.example.practica_firebase.util.ConstantsUtils.Companion.AREA_NOT_SELECTED_FOUND
 import com.example.practica_firebase.util.ConstantsUtils.Companion.ET_ID_AREA
 import com.example.practica_firebase.util.ConstantsUtils.Companion.ET_ID_EDIFICIO
@@ -15,7 +15,7 @@ import com.example.practica_firebase.util.ConstantsUtils.Companion.ET_PISO
 import com.example.practica_firebase.util.ConstantsUtils.Companion.FAIL_WHEN_TRYING_TO_GET_AREAS
 import com.example.practica_firebase.util.ConstantsUtils.Companion.FAIL_WHEN_TRYING_TO_INSERT_SUB_DEPTO
 import com.example.practica_firebase.util.ConstantsUtils.Companion.INSERT_VALIDATION_MESSAGE
-import com.example.practica_firebase.util.ConstantsUtils.Companion.NO_RESULTS_FOUND
+import com.example.practica_firebase.util.ConstantsUtils.Companion.NO_RESULTS_FOUND_SUB_DEPTO
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SEARCH_VALIDATION_MESSAGE
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DESCRIPCION
 import com.example.practica_firebase.util.ConstantsUtils.Companion.SPINNER_VALUE_DIVISION
@@ -106,7 +106,7 @@ class SubDeptoService(context: Context) {
                 makeMessage(SEARCH_VALIDATION_MESSAGE, subDeptoFragmentContext)
             }
 
-            val etBuscarValue = editText.toString()
+            val etBuscarValue = editText.toString().uppercase()
             var subDepto : List<SubDeptoModel> = listOf()
             val selectedItem = spinner.selectedItem
 
@@ -123,16 +123,49 @@ class SubDeptoService(context: Context) {
                     subDepto = dataBaseHelper.getSubDeptoByIdEdificio(etBuscarValue)
                 }
                 if (subDepto.isNullOrEmpty()) {
-                    makeMessage(NO_RESULTS_FOUND, subDeptoFragmentContext)
+                    makeMessage(NO_RESULTS_FOUND_SUB_DEPTO, subDeptoFragmentContext)
                 }
             } catch (exception : Exception) {
-                makeMessage(FAIL_WHEN_TRYING_TO_GET_AREAS, subDeptoFragmentContext)
+                makeMessage(FAIL_WHEN_TRYING_TO_INSERT_SUB_DEPTO, subDeptoFragmentContext)
             }
 
             // Limpiar campo
             clearField(editText)
 
         return subDepto
+    }
+
+    /**
+     *  Procesa la respuesta obtenida del AlertDialog y realiza
+     *  la operación en base de datos correspondiente
+     *
+     *  @param subDepto
+     *  @param operation
+     */
+    suspend fun processAlertResponse(subDepto: SubDeptoModel, operation : Operation) {
+
+        if (operation == Operation.CANCEL){
+            makeMessage("Acción cancelada", subDeptoFragmentContext)
+            return
+        }
+
+        if (operation == Operation.DELETE){
+            try {
+                dataBaseHelper.deleteSubDeptoById(subDepto.idSubDepto!!)
+                makeMessage("Subdepartamento eliminado con éxito", subDeptoFragmentContext)
+            } catch (exception : Exception) {
+                makeMessage("Error al eliminar", subDeptoFragmentContext)
+            }
+        }
+
+        if (operation == Operation.UPDATE){
+            try {
+                dataBaseHelper.updateOneSubDepartamento(subDepto)
+                makeMessage("SubDepto actualizado con éxito", subDeptoFragmentContext)
+            } catch (exception : Exception) {
+                makeMessage("Error al actualizar", subDeptoFragmentContext)
+            }
+        }
     }
 
     /**

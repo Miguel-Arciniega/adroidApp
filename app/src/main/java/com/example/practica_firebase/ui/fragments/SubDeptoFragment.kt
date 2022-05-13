@@ -9,12 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
+import com.example.practica_firebase.dao.DataBaseHelper
 import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_AREA
+import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_EDIFICIO
+import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_SUBDEPTO
+import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_PISO
 import com.example.practica_firebase.databinding.FragmentSubDeptosBinding
 import com.example.practica_firebase.model.AreaModel
+import com.example.practica_firebase.model.SubDeptoModel
+import com.example.practica_firebase.model.enum.Operation
 import com.example.practica_firebase.services.AreaService
 import com.example.practica_firebase.services.SubDeptoService
 import com.example.practica_firebase.ui.modal.ModalActualizarArea
+import com.example.practica_firebase.ui.modal.ModalActualizarSubDepto
 import com.example.practica_firebase.util.ConstantsUtils
 import com.example.practica_firebase.util.ConstantsUtils.Companion.TYPE_AREA
 import com.example.practica_firebase.util.ConstantsUtils.Companion.TYPE_SUB_DEPTO
@@ -22,7 +29,9 @@ import com.example.practica_firebase.util.FormUtils
 import com.example.practica_firebase.util.MessagesUtils.Companion.showMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SubDeptoFragment : Fragment() {
 
@@ -140,6 +149,11 @@ class SubDeptoFragment : Fragment() {
                  // Agregar documento a la bd
                  subDeptoService.addSubDeptoWithGivenValues(fieldMap)
 
+                withContext(Main) {
+                    switch.isChecked = false
+                    binding.switch1.text = "Subdepartamento"
+                }
+
                  //Actualizar listView
                  FormUtils.updateListView(
                      lvAreaView,
@@ -161,10 +175,15 @@ class SubDeptoFragment : Fragment() {
                 val etBuscarVal = etBuscar.text
 
                 // Recuperar las areas o subdepartamentos resultantes según el criterio
-                val area = subDeptoService.getSubDeptoByGivenValues(etBuscarVal, spinner)
+                val subDepto = subDeptoService.getSubDeptoByGivenValues(etBuscarVal, spinner)
+
+                withContext(Main) {
+                    switch.isChecked = false
+                    binding.switch1.text = "Subdepartamento"
+                }
 
                 // Actualizar listView
-                FormUtils.updateListView(lvAreaView, area, TYPE_SUB_DEPTO, requireContext())
+                FormUtils.updateListView(lvAreaView, subDepto, TYPE_SUB_DEPTO, requireContext())
             }
         }
 
@@ -197,6 +216,46 @@ class SubDeptoFragment : Fragment() {
                         // Si se hace click en el boton de CANCELAR, processamos la acción
                         .setNeutralButton(ConstantsUtils.ALERT_DIALOG_OPERATION_CANCELAR) { _, _ ->
                         }.show()
+                }else{
+                    val subDepto = lvAreaView.getItemAtPosition(position) as SubDeptoModel
+
+                    // Construimos un AlertDialog
+                    AlertDialog.Builder(context)
+
+                        // Añadimos el titulo y el mensaje al AlertDialog
+                        .setTitle(ConstantsUtils.ALERT_DIALOG_TITLE_AVISO)
+                        .setMessage(ConstantsUtils.ALERT_DIALOG_OPERATION_MESSAGE)
+
+                        // Si se hace click en el boton de ELIMINAR, processamos la acción
+                        .setNegativeButton(ConstantsUtils.ALERT_DIALOG_OPERATION_ELIMINAR) { _, _ ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                subDeptoService.processAlertResponse(subDepto, Operation.DELETE)
+                                FormUtils.updateListView(
+                                    lvAreaView,
+                                    subDeptoService.getSubDeptosFromDataBase(),
+                                    TYPE_AREA,
+                                    requireContext()
+                                )
+                                withContext(Main) {
+                                    switch.isChecked = false
+                                    binding.switch1.text = "Subdepartamento"
+                                }
+                            }
+                        }
+
+                        // Si se hace click en el boton de ACTUALIZAR, mostramos el modal para actualizar
+                        .setPositiveButton(ConstantsUtils.ALERT_DIALOG_OPERATION_ACTUALIZAR) { _, _ ->
+                            showUpdateDeptoModal(subDepto)
+                            switch.isChecked = false
+                            binding.switch1.text = "Subdepartamento"
+                        }
+
+                        // Si se hace click en el boton de CANCELAR, processamos la acción
+                        .setNeutralButton(ConstantsUtils.ALERT_DIALOG_OPERATION_CANCELAR) { _, _ ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                subDeptoService.processAlertResponse(subDepto, Operation.CANCEL)
+                            }
+                        }.show()
                 }
             }
 
@@ -216,26 +275,29 @@ class SubDeptoFragment : Fragment() {
             )
         }
 
+        binding.switch1.isChecked = false
+        binding.switch1.text = "Subdepartamento"
+
         super.onResume()
     }
 
-    private fun showActualizarSubDeptoModal(){
-        val modal = Intent(requireContext(), ModalActualizarArea::class.java)
+    /**
+     *  Inicia el activity ModalActualizar y le pasa el area
+     *  como parametro
+     *
+     *  @param subDepto
+     */
+    private fun showUpdateDeptoModal(subDepto: SubDeptoModel){
+        val modal = Intent(requireContext(), ModalActualizarSubDepto::class.java)
+        modal.putExtra(FIELD_ID_SUBDEPTO, subDepto.idSubDepto)
+        modal.putExtra(FIELD_ID_EDIFICIO, subDepto.idEdificio)
+        modal.putExtra(FIELD_PISO, subDepto.piso)
+        modal.putExtra(FIELD_ID_AREA, subDepto.idArea)
         startActivity(modal)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object{
-        fun getInstance(idArea: String?): SubDeptoFragment {
-            val fragment = SubDeptoFragment()
-            val bundle = Bundle()
-            bundle.putString(FIELD_ID_AREA, idArea)
-            fragment.arguments = bundle
-            return fragment
-        }
     }
 }

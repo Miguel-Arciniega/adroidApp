@@ -41,7 +41,7 @@ class ModalActualizarArea : AppCompatActivity() {
         // Obtenemos los valores originales del area
         val idArea = extras[FIELD_ID_AREA].toString().toLong()
         val descripcion = extras[FIELD_DESCRIPCION].toString().uppercase()
-        val division = extras[FIELD_DIVISION].toString().uppercase()
+        val division = extras[FIELD_DIVISION].toString().uppercase().uppercase()
         val cantEmpleados = extras[FIELD_CANT_EMPLEADOS].toString().toLong()
 
         etDescripcion.setText(descripcion)

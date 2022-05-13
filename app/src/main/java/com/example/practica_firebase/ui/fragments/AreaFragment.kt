@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.core.R
 import androidx.fragment.app.Fragment
 import com.example.practica_firebase.dao.DataBaseHelper
 import com.example.practica_firebase.databinding.FragmentAreaBinding
@@ -143,7 +142,7 @@ class AreaFragment : Fragment() {
 
                 // Si se hace click en el boton de ACTUALIZAR, mostramos el modal para actualizar
                 .setPositiveButton(ALERT_DIALOG_OPERATION_ACTUALIZAR) { _, _ ->
-                    showUpdateModal(area)
+                    showUpdateAreaModal(area)
                 }
 
                 // Si se hace click en el boton de CANCELAR, processamos la acción
@@ -163,7 +162,7 @@ class AreaFragment : Fragment() {
      *
      *  @param area
      */
-    private fun showUpdateModal(area: AreaModel){
+    private fun showUpdateAreaModal(area: AreaModel){
         val modal = Intent(requireContext(), ModalActualizarArea::class.java)
         modal.putExtra(FIELD_ID_AREA, area.idArea)
         modal.putExtra(FIELD_DESCRIPCION, area.descripcion)

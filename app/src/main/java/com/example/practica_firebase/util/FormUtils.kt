@@ -60,12 +60,12 @@ class FormUtils {
          *
          *   @param field
          */
-        fun clearField(field: Editable?){
-            if (field.isNullOrEmpty()){
-                return
+        suspend fun clearField(field: Editable?) {
+            withContext(Main) {
+                if (!field.isNullOrEmpty()) {
+                    field.clear()
+                }
             }
-
-            field.clear()
         }
 
         suspend fun makeMessage(message: String, context: Context){

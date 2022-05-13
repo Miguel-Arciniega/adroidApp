@@ -2,79 +2,72 @@ package com.example.practica_firebase.ui.modal
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_CANT_EMPLEADOS
-import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_DESCRIPCION
-import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_DIVISION
 import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_AREA
-import com.example.practica_firebase.databinding.ActivityModalActualizarBinding
-import com.example.practica_firebase.model.AreaModel
+import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_EDIFICIO
+import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_ID_SUBDEPTO
+import com.example.practica_firebase.dao.DataBaseHelper.DbConstants.FIELD_PISO
+import com.example.practica_firebase.databinding.ModalActualizarSubDeptosBinding
+import com.example.practica_firebase.model.SubDeptoModel
 import com.example.practica_firebase.model.enum.Operation
-import com.example.practica_firebase.services.AreaService
+import com.example.practica_firebase.services.SubDeptoService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ModalActualizarArea : AppCompatActivity() {
+class ModalActualizarSubDepto : AppCompatActivity() {
 
-    lateinit var binding: ActivityModalActualizarBinding
+    lateinit var binding: ModalActualizarSubDeptosBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityModalActualizarBinding.inflate(layoutInflater)
+        binding = ModalActualizarSubDeptosBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Obtenemos los extras
         val extras = this.intent.extras!!
 
         // Declaración de componentes
-        val etDescripcion = binding.descripcion
-        val etDivision = binding.sDivision
-        val etCantEmpleados = binding.cantidadEmpleados
+        val etIdEdificio = binding.idedificio
+        val etPiso = binding.piso
         val btnActualizar = binding.actualizar
         val btnVolver = binding.volver
 
         // Inicializamos el  Servicio
-        val dashboardFragmentService =
-            AreaService(this)
+        val subDeptoService =
+            SubDeptoService(this)
 
         // Obtenemos los valores originales del area
+        val idSubdepto = extras[FIELD_ID_SUBDEPTO].toString().toLong()
+        val idEdificio = extras[FIELD_ID_EDIFICIO].toString().uppercase()
+        val piso = extras[FIELD_PISO].toString().uppercase()
         val idArea = extras[FIELD_ID_AREA].toString().toLong()
-        val descripcion = extras[FIELD_DESCRIPCION].toString().uppercase()
-        val division = extras[FIELD_DIVISION].toString().uppercase()
-        val cantEmpleados = extras[FIELD_CANT_EMPLEADOS].toString().toLong()
 
-        etDescripcion.setText(descripcion)
-        etDivision.setText(division)
-        etCantEmpleados.setText(cantEmpleados.toString())
+        etIdEdificio.setText(idEdificio)
+        etPiso.setText(piso)
 
         btnActualizar.setOnClickListener {
 
-            val fieldDescripcion = if (etDescripcion.text.isNullOrBlank()){
-                descripcion
+            val fieldIdEdificio = if (etIdEdificio.text.isNullOrBlank()){
+                idEdificio
             }else{
-                etDescripcion.text.toString().uppercase()
+                etIdEdificio.text.toString().uppercase()
             }
-            val fieldDivision = if (etDivision.text.isNullOrBlank()){
-                division
-            }else{
-                etDivision.text.toString().uppercase()
-            }
-            val fieldCantEmpleados = if (etCantEmpleados.text.isNullOrBlank()){
-                cantEmpleados
-            }else{
-                etCantEmpleados.text.toString().toLong()
+            val fieldPiso = if (etPiso.text.isNullOrBlank()){
+                piso
+            } else {
+                etPiso.text.toString().uppercase()
             }
 
-            val area = AreaModel(
-                idArea,
-                fieldDescripcion,
-                fieldDivision,
-                fieldCantEmpleados
+            val subDepto = SubDeptoModel(
+                idSubdepto,
+                fieldIdEdificio,
+                fieldPiso,
+                idArea
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                dashboardFragmentService.processAlertResponse(area, Operation.UPDATE)
+                subDeptoService.processAlertResponse(subDepto, Operation.UPDATE)
             }
         }
 

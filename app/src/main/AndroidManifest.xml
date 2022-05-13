@@ -13,7 +13,7 @@
             android:name=".ui.modal.ModalActualizarArea"
             android:exported="false" />
         <activity
-            android:name=".ui.modal.ModalMostrarAreas"
+            android:name=".ui.modal.ModalActualizarSubDepto"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
